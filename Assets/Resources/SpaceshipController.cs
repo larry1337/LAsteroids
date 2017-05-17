@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 
-public class SpaceshipController : MonoBehaviour {
+public class SpaceshipController : NetworkBehaviour {
 
 	float degree;
 	float acclX;
@@ -39,6 +39,9 @@ public class SpaceshipController : MonoBehaviour {
 
 
 	void Start(){
+		
+		this.transform.rotation = Quaternion.Euler(new Vector3(-90,0,0));
+
 		this.degree = 0;
 		initialRot = this.transform.localRotation;
 
@@ -60,10 +63,10 @@ public class SpaceshipController : MonoBehaviour {
 
 	void Update()
 	{
-//		if (!isLocalPlayer)
-//		{
-//			return;
-//		}
+		if (!isLocalPlayer)
+		{
+			return;
+		}
 
 		if (invulnEnd < DateTime.Now)
 			capsuleCollider.enabled = true;
@@ -88,24 +91,25 @@ public class SpaceshipController : MonoBehaviour {
 			acclY -= acclY * 0.2f * Time.deltaTime; 
 		}
 
-		SetDegree ();
+		CmdSetDegree ();
 	
 		this.transform.position += new Vector3(acclX, acclY ,0) * Time.deltaTime * SPEED_INCR;
 
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			Fire();
+			CmdFire();
 		}
 
 	} 
 
 //	public override void OnStartLocalPlayer()
 //	{
-//		//GetComponent<MeshRenderer>().transform.rotation = Quaternion.Euler(new Vector3(-90,0,0));
+//		GetComponent<MeshRenderer>().transform.rotation = Quaternion.Euler(new Vector3(-90,0,0));
 //		//GetComponent<MeshRenderer>().material.color = Color.blue;
 //	}
 
-	void SetDegree(){
+	[Command]
+	void CmdSetDegree(){
 
 		var horizotal = Input.GetAxis("Horizontal");
 		degree += horizotal * Time.deltaTime * 200.0f;
@@ -122,8 +126,8 @@ public class SpaceshipController : MonoBehaviour {
 		transform.Rotate(0, deg, 0);
 	}
 		
-
-	void Fire()
+	[Command]
+	void CmdFire()
 	{
 		var bullet = (GameObject)Instantiate (
 			bulletPrefab,
@@ -132,6 +136,9 @@ public class SpaceshipController : MonoBehaviour {
 
 		// Add velocity to the bullet
 		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+
+		// Spawn the bullet on the Clients
+		NetworkServer.Spawn(bullet);
 
 		// Destroy the bullet after 10 seconds
 		Destroy(bullet, 2.0f);
@@ -144,7 +151,7 @@ public class SpaceshipController : MonoBehaviour {
 
 
 			Destroy(this.gameObject);
-			gameController.SpawnPlayer = true;
+  			gameController.SpawnPlayer = true;
 
 			Destroy (gameController.LiveThree);
 			if (gameController.LiveThree == null) {

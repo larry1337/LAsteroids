@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class Asteroid : MonoBehaviour {
+public class Asteroid : NetworkBehaviour {
 
 	public Vector3 direction;
 	public List<int> VALUES_FOR_DIRECTION = new List<int>(){-1,0,1};
 	float thrust = 1.0f;
 	private GameController gameController;
+
 
 
 	void Start () {
@@ -34,11 +35,14 @@ public class Asteroid : MonoBehaviour {
 		this.direction = new Vector3 (randomValueX, randomValueY, 0);
 		
 	}
-		
+
+
 	void Update () {
+
 		Util.ScreenWrap(this.transform);
 		this.transform.position += direction * Time.deltaTime * thrust;
 		this.transform.Rotate (1f, 1.8f, 1f);
+
 	}
 
 
