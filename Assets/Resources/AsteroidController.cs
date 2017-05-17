@@ -82,21 +82,18 @@ public class AsteroidController : NetworkBehaviour {
 
 			var bullet = collision.gameObject.GetComponent<Bullet>();
 			Debug.Log(bullet.spawnOriginID);
-			Debug.Log(PlayerController.player.GetComponent<NetworkIdentity>().playerControllerId);
-			if (bullet.spawnOriginID == PlayerController.player.GetComponent<NetworkIdentity>().playerControllerId) {
+			Debug.Log(PlayerController.player.netId);
+	
+			if (bullet.spawnOriginID == PlayerController.player.netId) {
   				gameController.TargetAddScore (connectionToClient, 20);
 			}
-		
-
-
-  				
-
+	
 		}
 
 		if (collision.gameObject.tag == "Bullet" && (this.gameObject.tag == "AsteroidS" || this.gameObject.tag == "AsteroidM")) {
 			
 			var bullet = collision.gameObject.GetComponent<Bullet>();
-			if (bullet.spawnOriginID == PlayerController.player.GetComponent<NetworkIdentity>().playerControllerId) {
+			if (bullet.spawnOriginID == PlayerController.player.netId) {
 				gameController.TargetAddScore (connectionToClient, 10);
 			}
 

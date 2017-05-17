@@ -22,6 +22,8 @@ public class PlayerController : NetworkBehaviour {
 	private Vector3 mySpawnPoint = Vector3.zero;
 	public static PlayerController player;
 	private Boolean doNotRespawn = false;
+	[SyncVar]
+	private Boolean isDead;
 
 
 	void Start(){
@@ -30,7 +32,7 @@ public class PlayerController : NetworkBehaviour {
 		{
 			spawnPoints = FindObjectsOfType<NetworkStartPosition>();
 		}
-
+		OnConnectedToServer ();
 		this.transform.rotation = Quaternion.Euler(new Vector3(-90,0,0));
 		this.degree = 0;
 		initialRot = this.transform.localRotation;
@@ -55,6 +57,10 @@ public class PlayerController : NetworkBehaviour {
 	}
 
 	void Update() {
+
+		if (isDead) {
+			Destroy(this.gameObject);
+		}
 		
 		if (!isLocalPlayer)
 			return;
@@ -121,7 +127,7 @@ public class PlayerController : NetworkBehaviour {
 			bulletSpawn.rotation);
 
 		var bulletScript = bullet.GetComponent<Bullet> ();
-		bulletScript.spawnOriginID = this.GetComponent<NetworkIdentity> ().playerControllerId;
+		bulletScript.spawnOriginID = this.netId;
 
 		// Add velocity to the bullet
 		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
@@ -133,6 +139,10 @@ public class PlayerController : NetworkBehaviour {
 		Destroy(bullet, 2.0f);
 	}
 
+	void OnConnectedToServer() {
+		print("Player ID is " + Network.player.ToString());
+	}
+
 	public override void OnStartLocalPlayer()
 	{
 		GetComponent<MeshRenderer>().material.color = Color.yellow;
@@ -142,7 +152,11 @@ public class PlayerController : NetworkBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 
-		if ((other.tag == "AsteroidXL" || other.tag == "AsteroidM" || other.tag == "AsteroidS") && gameController.gameOver == false && doNotRespawn == false) {
+
+		if (gameController.gameOver)
+			return;
+
+		if ((other.tag == "AsteroidXL" || other.tag == "AsteroidM" || other.tag == "AsteroidS")) {
 
 			RpcRespawn ();
 
@@ -153,9 +167,9 @@ public class PlayerController : NetworkBehaviour {
 				Destroy (gameController.LiveTwo);
 		}
 		if (gameController.LiveTwo == null) {
-				doNotRespawn = true;
 				Destroy (gameController.LiveOne);
 				gameController.gameOver = true;
+
 		}
 
 		}

@@ -64,6 +64,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 		var enemy = (GameObject)Instantiate(GameObjects[objectTypeIndex], spawnPoints[spawnPointIndex].transform.localPosition, spawnRotation);
 		NetworkServer.Spawn(enemy);
+
 		}
 	}
 

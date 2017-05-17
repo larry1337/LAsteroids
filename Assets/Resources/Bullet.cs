@@ -5,7 +5,8 @@ using UnityEngine.Networking;
 
 public class Bullet : NetworkBehaviour {
 
-	public short spawnOriginID;
+	[SyncVar]
+	public NetworkInstanceId spawnOriginID;
 
 	void Update()
 	{
