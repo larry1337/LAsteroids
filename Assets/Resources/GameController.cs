@@ -35,8 +35,8 @@ public class GameController : NetworkBehaviour {
 		UpdateScore ();
 		//AddPlayer ();
 
-
 	}
+		
 	
 	// Update is called once per frame
 	void Update () {
@@ -49,6 +49,8 @@ public class GameController : NetworkBehaviour {
 				if (Input.GetKeyDown (KeyCode.R))
 				{
 					SceneManager.LoadScene (0);
+					NetworkServer.Reset ();
+
 				}
 			}
 			return;
@@ -70,10 +72,11 @@ public class GameController : NetworkBehaviour {
 	}
 
 
-	public void AddScore (int newScoreValue)
+	public void TargetAddScore (NetworkConnection target, int newScoreValue)
 	{
-		score += newScoreValue;
-		UpdateScore ();
+			score += newScoreValue;
+			UpdateScore ();
+
 	}
 		
 
@@ -115,7 +118,7 @@ public class GameController : NetworkBehaviour {
 		gameOver = true;
 		gameOverText.text = "Game Over!";
 		restart = true;
-		restartText.text = "press 'R' for restart";
+		//restartText.text = "press 'R' for restart";
 	}
 
 

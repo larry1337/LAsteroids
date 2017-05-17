@@ -20,6 +20,8 @@ public class PlayerController : NetworkBehaviour {
 	private CapsuleCollider capsuleCollider;
 	private NetworkStartPosition[] spawnPoints;
 	private Vector3 mySpawnPoint = Vector3.zero;
+	public static PlayerController player;
+	private Boolean doNotRespawn = false;
 
 
 	void Start(){
@@ -118,6 +120,9 @@ public class PlayerController : NetworkBehaviour {
 			bulletSpawn.position,
 			bulletSpawn.rotation);
 
+		var bulletScript = bullet.GetComponent<Bullet> ();
+		bulletScript.spawnOriginID = this.GetComponent<NetworkIdentity> ().playerControllerId;
+
 		// Add velocity to the bullet
 		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
 
@@ -132,25 +137,29 @@ public class PlayerController : NetworkBehaviour {
 	{
 		GetComponent<MeshRenderer>().material.color = Color.yellow;
 		this.mySpawnPoint = this.transform.position;
+		player = this;
 	}
 
 	void OnTriggerEnter(Collider other) {
 
-		if (other.tag == "AsteroidXL" || other.tag == "AsteroidM" || other.tag == "AsteroidS") {
+		if ((other.tag == "AsteroidXL" || other.tag == "AsteroidM" || other.tag == "AsteroidS") && gameController.gameOver == false && doNotRespawn == false) {
 
-			RpcRespawn();
+			RpcRespawn ();
 
 			Destroy (gameController.LiveThree);
-			if (gameController.LiveThree == null) {
+		}
+
+		if (gameController.LiveThree == null) {
 				Destroy (gameController.LiveTwo);
-			}
-			if (gameController.LiveTwo == null) {
+		}
+		if (gameController.LiveTwo == null) {
+				doNotRespawn = true;
 				Destroy (gameController.LiveOne);
 				gameController.gameOver = true;
-			}
+		}
 
 		}
-	}
+
 
 
 	void RpcRespawn()

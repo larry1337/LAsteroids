@@ -50,7 +50,8 @@ public class AsteroidController : NetworkBehaviour {
 		this.transform.Rotate (1f, 1.8f, 1f);
 
 	}
-		
+
+
 	void OnCollisionEnter(Collision collision)
 	{
 		
@@ -79,13 +80,26 @@ public class AsteroidController : NetworkBehaviour {
 			asteroidSTwo.transform.position = this.transform.position;
 			asteroidSTwoScript.direction = Quaternion.Euler (0, 0, -90) * direction;
 
-			
-			gameController.AddScore(20);
+			var bullet = collision.gameObject.GetComponent<Bullet>();
+			Debug.Log(bullet.spawnOriginID);
+			Debug.Log(PlayerController.player.GetComponent<NetworkIdentity>().playerControllerId);
+			if (bullet.spawnOriginID == PlayerController.player.GetComponent<NetworkIdentity>().playerControllerId) {
+  				gameController.TargetAddScore (connectionToClient, 20);
+			}
+		
+
+
+  				
+
 		}
 
 		if (collision.gameObject.tag == "Bullet" && (this.gameObject.tag == "AsteroidS" || this.gameObject.tag == "AsteroidM")) {
 			
-			gameController.AddScore(10);
+			var bullet = collision.gameObject.GetComponent<Bullet>();
+			if (bullet.spawnOriginID == PlayerController.player.GetComponent<NetworkIdentity>().playerControllerId) {
+				gameController.TargetAddScore (connectionToClient, 10);
+			}
+
 		}
 
 

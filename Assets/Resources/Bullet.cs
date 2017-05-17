@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 
 public class Bullet : NetworkBehaviour {
 
+	public short spawnOriginID;
+
 	void Update()
 	{
 
@@ -25,6 +27,7 @@ public class Bullet : NetworkBehaviour {
 //				asteroidSTwo.transform.position = new Vector3 (-2f, 0f, 0f);
 //			}
 			NetworkServer.Destroy(collision.gameObject);
+
 		}
 
 
