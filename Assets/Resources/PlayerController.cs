@@ -59,7 +59,7 @@ public class PlayerController : NetworkBehaviour {
 	void Update() {
 
 		if (isDead) {
-			Destroy(this.gameObject);
+			NetworkServer.Destroy(this.gameObject);
 		}
 		
 		if (!isLocalPlayer)
@@ -158,19 +158,23 @@ public class PlayerController : NetworkBehaviour {
 
 		if ((other.tag == "AsteroidXL" || other.tag == "AsteroidM" || other.tag == "AsteroidS")) {
 
-			RpcRespawn ();
-
-			Destroy (gameController.LiveThree);
-		}
-
-		if (gameController.LiveThree == null) {
+		    if (gameController.LiveThree != null) {
+				Destroy (gameController.LiveThree);
+				RpcRespawn ();
+			}
+				
+			if (gameController.LiveThree == null) {
 				Destroy (gameController.LiveTwo);
-		}
-		if (gameController.LiveTwo == null) {
+				RpcRespawn ();
+			}
+			if (gameController.LiveTwo == null) {
 				Destroy (gameController.LiveOne);
 				gameController.gameOver = true;
-
+				this.isDead = true;
+			}
 		}
+
+
 
 		}
 
